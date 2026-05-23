@@ -213,7 +213,7 @@ def start_quiz(pool):
 
 @st.dialog("Hello!")
 def show_popup_window():
-    st.write("This is an open source trivia game focused to help memorize key historical events. Simply, choose challenges if you wish and select a category to start. Good luck! ")
+    st.write("This is an open source trivia game focused on helping memorize key historical events. Simply, choose challenges if you wish and select a category to start. Good luck! ")
 
 #  menu screen 
 
