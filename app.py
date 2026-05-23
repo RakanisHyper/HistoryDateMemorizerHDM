@@ -45,7 +45,7 @@ TRIVIA_CATEGORIES = {
         "When did the Great Proletarian Cultural revolution start?": "1966",
         "When did the Great Proletarian Cultural revolution end?": "1976",
         "What is the timeframe for Mao Zedong's rise to power?": "1927-1949",
-        "What is timeframe for Mao Zedong's maintanence of power?": "1949-1976"
+        "What is the timeframe for Mao Zedong's maintanence of power?": "1949-1976"
     },
     "Hitler and the Weimar republic": {
         "This part is WIP": "check later",
