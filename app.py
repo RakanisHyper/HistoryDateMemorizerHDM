@@ -29,10 +29,13 @@ TRIVIA_CATEGORIES = {
         "When was the CCP formed?": "1921",
         "When did the first United Front form?": "1923",
         "When did the first United Front end?": "1927",
+        "When were the warlords defeated in China?": "1928",
         "When was the Jiangxi Soviet established?": "1931",
         "When did the Long March start?": "1934",
         "When did the Long March end?": "1935",
         "Where did Mao Zedong maintain his power after the Long March?": "Yan An",
+        "When did the Second United front form?": "1937", #?
+        "When did the Second United front end?": "1945", #?
         "When did the Chinese Civil War end?": "1949",
         "When was the Sino-Soviet Treaty signed?": "1950",
         "When did the Three and Five anti campaings happen? (dates for each of them using /)": "1951/1952",
@@ -45,7 +48,18 @@ TRIVIA_CATEGORIES = {
         "When did the Great Proletarian Cultural revolution start?": "1966",
         "When did the Great Proletarian Cultural revolution end?": "1976",
         "What is the timeframe for Mao Zedong's rise to power?": "1927-1949",
-        "What is the timeframe for Mao Zedong's maintanence of power?": "1949-1976"
+        "What is the timeframe for Mao Zedong's maintanence of power?": "1949-1976",
+        #Japan
+        "What is the timeframe for Japanese move to global war?": "1931-1941",
+        "When did the bomb explode in the Southern Manchurian railway that started Japanese aggression in Manchuria? (Month and Year)": "September 1931",
+        "When was Manchuria self proclaimed Manchukuo by the Japanese? (Month and Year)": "March 1931",
+        "When did China appeal to the LON that formed the Lytton Report? (Month and Year)": "December 1931",
+        "When did the Marco Polo bridge incident happen? )": "1937",
+        "When did the second united front by the CCP and GMD form? )": "1937",
+        "When did Japan take over Nanjing (Month and Year)": "December 1937",
+        "When was the Tripartite Pact between Japan, Italy and Germany signed?": "1940",
+        "When was the Soviet-Japanese Neutrality Pact signed?": "1941",
+        "When did Japan attack Pearl Harbor?": "1941"
     },
     "Hitler and the Weimar republic": {
         "This part is WIP": "check later",
