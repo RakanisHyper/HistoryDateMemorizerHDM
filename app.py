@@ -35,7 +35,7 @@ TRIVIA_CATEGORIES = {
         "Where did Mao Zedong maintain his power after the Long March?": "Yan An",
         "When did the Chinese Civil War end?": "1949",
         "When was the Sino-Soviet Treaty signed?": "1950",
-        "When did the Three and Five anti campaings happen? (dates for each of them using ",")": "1951,1952",
+        "When did the Three and Five anti campaings happen? (dates for each of them using /)": "1951/1952",
         "When did the First Five Year plan start?": "1953",
         "When did the First Five Year plan end?": "1957",
         "When did the Hundred Flowers campaign happen?": "1956",
