@@ -118,7 +118,7 @@ HISTORIOGRAPHY_CATEGORIES = {
 }
 
 
-# ── styles ────────────────────────────────────────────────────────────────────
+# ── styles 
 
 st.markdown("""
 <style>
@@ -207,7 +207,7 @@ div[role="dialog"] * { color: #000000 !important; }
 """, unsafe_allow_html=True)
 
 
-# ── session state defaults ────────────────────────────────────────────────────
+# ── session state defaults
 
 defaults = {
     "play_sound": None,
@@ -224,6 +224,7 @@ defaults = {
     "feedback_color": "#ffffff",
     "input_disabled": False,
     "wrong_questions": [],   # list of (question, correct_answer) for results screen
+    "viewing_category": None,  # name of category whose answers are being shown
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -251,7 +252,7 @@ def go_to_menu():
     st.rerun()
 
 
-# ── popup ─────────────────────────────────────────────────────────────────────
+# ── popup
 
 @st.dialog("Hello!")
 def show_popup_window():
@@ -261,92 +262,55 @@ def show_popup_window():
     )
 
 
-# ── menu screen ───────────────────────────────────────────────────────────────
+# ── menu screen 
 
 if st.session_state.screen == "menu":
     st.markdown("<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>Welcome to HDM!</b></div>", unsafe_allow_html=True)
     st.markdown("<div class='centered-title' style='margin-bottom:5px;'><i style='font-size:11pt;'>Choose your category:</i></div>", unsafe_allow_html=True)
 
-    # CSS for eye icon + hover answer panel
+    # eye button needs to be narrow — target it via its column's second child
     st.markdown("""
     <style>
-    .eye-wrap {
-        position: relative;
-        display: inline-block;
-        vertical-align: middle;
-        margin-bottom: 4px;
+    /* shrink any button whose text is just the eye emoji */
+    div.stButton > button[kind="secondary"]:has(p:only-child) {
+        font-size: 18px !important;
     }
-    .eye-btn {
-        width: 36px;
-        height: 36px;
-        background: #000;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: default;
-        font-size: 16px;
-        line-height: 1;
-        user-select: none;
+    /* the eye column is always the second in its row — make it tight */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div.stButton > button {
+        width: 36px !important;
+        min-width: 36px !important;
+        padding: 0 !important;
+        font-size: 20px !important;
     }
-    .eye-panel {
-        display: none;
-        position: absolute;
-        left: 44px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #fff;
-        border: 2px solid #000;
-        padding: 10px 14px;
-        z-index: 9999;
-        min-width: 260px;
-        max-width: 360px;
-        text-align: left;
-        font-family: Helvetica, sans-serif;
-        font-size: 10.5pt;
-        box-shadow: 4px 4px 0px #000;
-    }
-    .eye-wrap:hover .eye-panel { display: block; }
-    .qa-row { margin-bottom: 7px; }
-    .qa-q { font-weight: bold; color: #000 !important; }
-    .qa-a { color: #cc0000 !important; }
     </style>
     """, unsafe_allow_html=True)
 
-    def make_eye_html(questions_dict):
-        rows = ""
-        for q, a in questions_dict.items():
-            rows += (
-                f'<div class="qa-row">'
-                f'<div class="qa-q">{q}</div>'
-                f'<div class="qa-a">&#8594; {a.upper()}</div>'
-                f'</div>'
-            )
-        return (
-            f'<div class="eye-wrap">'
-            f'  <div class="eye-btn">&#128065;</div>'
-            f'  <div class="eye-panel">'
-            f'    <div style="font-weight:bold;margin-bottom:8px;border-bottom:1px solid #000;padding-bottom:4px;">Answers</div>'
-            f'    {rows}'
-            f'  </div>'
-            f'</div>'
-        )
-
-    col = st.columns([1, 2, 1])[1]
-    with col:
+    _, mid, _ = st.columns([1, 2, 1])
+    with mid:
         for name, questions in TRIVIA_CATEGORIES.items():
             has_q = bool(questions)  # False for None and empty dict
 
-            # eye icon row — only for categories that actually have questions
             if has_q:
-                st.markdown(make_eye_html(questions), unsafe_allow_html=True)
-
-            if questions is None:
+                # two columns: wide for the category button, narrow for the eye
+                btn_col, eye_col = st.columns([6, 1])
+                with btn_col:
+                    if questions is None:
+                        if st.button(name, key=f"cat_{name}"):
+                            st.session_state.screen = "historiography_menu"
+                            st.rerun()
+                    else:
+                        if st.button(name, key=f"cat_{name}"):
+                            start_quiz(list(questions.items()))
+                with eye_col:
+                    if st.button("👁", key=f"eye_{name}"):
+                        st.session_state.viewing_category = name
+                        st.session_state.screen = "view_answers"
+                        st.rerun()
+            elif questions is None:
+                # Historiography — no answers to show, just the button
                 if st.button(name, key=f"cat_{name}"):
                     st.session_state.screen = "historiography_menu"
                     st.rerun()
-            elif questions:
-                if st.button(name, key=f"cat_{name}"):
-                    start_quiz(list(questions.items()))
             else:
                 st.button(f"{name} (soon)", key=f"cat_{name}", disabled=True)
 
@@ -383,7 +347,33 @@ if st.session_state.screen == "menu":
                 st.rerun()
 
 
-# ── historiography sub-menu ───────────────────────────────────────────────────
+# ── view answers screen 
+
+elif st.session_state.screen == "view_answers":
+    cat_name = st.session_state.viewing_category
+    questions = TRIVIA_CATEGORIES.get(cat_name, {})
+
+    st.markdown(f"<div class='centered-title' style='margin-top:40px; margin-bottom:5px;'><b style='font-size:18pt;'>👁 {cat_name}</b></div>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-title' style='margin-bottom:20px;'><i style='font-size:11pt;'>All answers for this category</i></div>", unsafe_allow_html=True)
+
+    for q, a in questions.items():
+        st.markdown(
+            f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid #000; padding-left:12px;'>"
+            f"<b style='font-size:11pt;'>{q}</b><br>"
+            f"<span style='font-size:11pt; color:#cc0000 !important;'>&#8594; {a.upper()}</span>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+
+    st.write("")
+    col = st.columns([1, 2, 1])[1]
+    with col:
+        if st.button("← Back to Menu", key="view_ans_back"):
+            st.session_state.viewing_category = None
+            go_to_menu()
+
+
+# ── historiography───
 
 elif st.session_state.screen == "historiography_menu":
     st.markdown("<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>Historiography</b></div>", unsafe_allow_html=True)
@@ -403,7 +393,7 @@ elif st.session_state.screen == "historiography_menu":
             go_to_menu()
 
 
-# ── quiz screen ───────────────────────────────────────────────────────────────
+# ── quiz screen 
 
 elif st.session_state.screen == "quiz":
     idx = st.session_state.current_index
@@ -488,7 +478,7 @@ elif st.session_state.screen == "quiz":
                     unsafe_allow_html=True,
                 )
 
-            # give up button — always visible during quiz
+           
             st.write("")
             if st.button("Give Up", key="give_up_btn"):
                 go_to_menu()
@@ -500,7 +490,7 @@ elif st.session_state.screen == "quiz":
         st.rerun()
 
 
-# ── end screen ────────────────────────────────────────────────────────────────
+# ── end screen 
 
 elif st.session_state.screen == "end":
     total = len(st.session_state.questions)
@@ -536,7 +526,7 @@ elif st.session_state.screen == "end":
             go_to_menu()
 
 
-# ── results screen ────────────────────────────────────────────────────────────
+# ── results screen
 
 elif st.session_state.screen == "results":
     wrong = st.session_state.wrong_questions
@@ -564,7 +554,7 @@ elif st.session_state.screen == "results":
             go_to_menu()
 
 
-# ── info button (must stay last for CSS pin to work) ─────────────────────────
+# ── info button
 
 if st.button("ℹ️", key="true_anchored_bottom_left_btn"):
     show_popup_window()
