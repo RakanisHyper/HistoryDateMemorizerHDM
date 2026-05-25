@@ -267,11 +267,80 @@ if st.session_state.screen == "menu":
     st.markdown("<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>Welcome to HDM!</b></div>", unsafe_allow_html=True)
     st.markdown("<div class='centered-title' style='margin-bottom:5px;'><i style='font-size:11pt;'>Choose your category:</i></div>", unsafe_allow_html=True)
 
+    # CSS for eye icon + hover answer panel
+    st.markdown("""
+    <style>
+    .eye-wrap {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        margin-bottom: 4px;
+    }
+    .eye-btn {
+        width: 36px;
+        height: 36px;
+        background: #000;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: default;
+        font-size: 16px;
+        line-height: 1;
+        user-select: none;
+    }
+    .eye-panel {
+        display: none;
+        position: absolute;
+        left: 44px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #fff;
+        border: 2px solid #000;
+        padding: 10px 14px;
+        z-index: 9999;
+        min-width: 260px;
+        max-width: 360px;
+        text-align: left;
+        font-family: Helvetica, sans-serif;
+        font-size: 10.5pt;
+        box-shadow: 4px 4px 0px #000;
+    }
+    .eye-wrap:hover .eye-panel { display: block; }
+    .qa-row { margin-bottom: 7px; }
+    .qa-q { font-weight: bold; color: #000 !important; }
+    .qa-a { color: #cc0000 !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    def make_eye_html(questions_dict):
+        rows = ""
+        for q, a in questions_dict.items():
+            rows += (
+                f'<div class="qa-row">'
+                f'<div class="qa-q">{q}</div>'
+                f'<div class="qa-a">&#8594; {a.upper()}</div>'
+                f'</div>'
+            )
+        return (
+            f'<div class="eye-wrap">'
+            f'  <div class="eye-btn">&#128065;</div>'
+            f'  <div class="eye-panel">'
+            f'    <div style="font-weight:bold;margin-bottom:8px;border-bottom:1px solid #000;padding-bottom:4px;">Answers</div>'
+            f'    {rows}'
+            f'  </div>'
+            f'</div>'
+        )
+
     col = st.columns([1, 2, 1])[1]
     with col:
         for name, questions in TRIVIA_CATEGORIES.items():
+            has_q = bool(questions)  # False for None and empty dict
+
+            # eye icon row — only for categories that actually have questions
+            if has_q:
+                st.markdown(make_eye_html(questions), unsafe_allow_html=True)
+
             if questions is None:
-                # Historiography gets its own sub-menu screen
                 if st.button(name, key=f"cat_{name}"):
                     st.session_state.screen = "historiography_menu"
                     st.rerun()
