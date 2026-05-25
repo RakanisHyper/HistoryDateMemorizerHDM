@@ -376,9 +376,16 @@ elif st.session_state.screen == "quiz":
         with col:
             with st.form(key="hdm_form", clear_on_submit=True):
                 user_input = st.text_input("", key="ans_box", disabled=st.session_state.input_disabled, label_visibility="collapsed")
-                submitted = st.form_submit_button("Check Answer")
 
-                if submitted and not st.session_state.input_disabled:
+                # swap the button label depending on state — same position, different action
+                if st.session_state.input_disabled:
+                    next_clicked = st.form_submit_button("Next Question")
+                    check_clicked = False
+                else:
+                    check_clicked = st.form_submit_button("Check Answer")
+                    next_clicked = False
+
+                if check_clicked:
                     correct = st.session_state.answers[idx].strip().lower()
                     if user_input.strip().lower() == correct:
                         st.session_state.score += 1
@@ -395,6 +402,12 @@ elif st.session_state.screen == "quiz":
                     st.session_state.input_disabled = True
                     st.rerun()
 
+                if next_clicked:
+                    st.session_state.current_index += 1
+                    st.session_state.feedback_text = ""
+                    st.session_state.input_disabled = False
+                    st.rerun()
+
             if st.session_state.play_sound:
                 play_local_sound(st.session_state.play_sound)
                 st.session_state.play_sound = None
@@ -405,12 +418,6 @@ elif st.session_state.screen == "quiz":
                     f"color:{st.session_state.feedback_color} !important;'>{st.session_state.feedback_text}</div>",
                     unsafe_allow_html=True,
                 )
-                st.write("")
-                if st.button("Next Question"):
-                    st.session_state.current_index += 1
-                    st.session_state.feedback_text = ""
-                    st.session_state.input_disabled = False
-                    st.rerun()
 
             # give up button — always visible during quiz
             st.write("")
