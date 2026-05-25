@@ -63,10 +63,50 @@ TRIVIA_CATEGORIES = {
         "When did Japan attack Pearl Harbor?": "1941"
     },
     "Hitler and the Weimar republic": {
-        "This part is WIP": "check later",
-        "This part is WIP": "check later",
-        "This part is WIP": "check later"
+        # Weimar Republic  Rise to Power
+        "When was the Treaty of Versailles signed?": "1918",
+        "When did the Spartacist Revolution happen? (Month and Year)": "January 1919",
+        "When was the Nazi party founded": "1920",
+        "When was the Nazi paramilitary group during Hitler's rise to power called?": "SA",
+        "When did the French occupation of the Ruhr happen?": "1923",
+        "When did the Munich Putsch happen?": "1923",
+        "Was the Munich Putsch successful?": "No",
+        "What book did hitler write in jail?": "Mein Kampf",
+        "When was the Rentemark introduced? (Month and Year)": "November 1923",
+        "When was the Rentemark turned into the Reichsmark?": "1924",
+        "When did Germany sign the Locarno Treaties?": "1925",
+        "When was Germany admitted into the League of Nations?": "1926",
+        "When did the Wall Street Crash happen, triggering the Great Depression in Germany?": "1929",
+        "Was there inflation with the Great Depression in Germany?": "No",
+        "When was Hitler appointed Chancellor of Germany? (Month and Year)": "January 1933",
+        "When did the Reichstag fire occur? (Month and Year)": "February 1933",
+        "When was the Enabling Act passed, giving Hitler plenary powers? (Month and Year)": "March 1933",
+        "What is the timeframe for Hitler's rise to power?": "1923-1933",
+        # Maintenance of Power  Domestic Policy
+        "When did the Night of the Long Knives happen? (Month and Year)": "January 1934",
+        "When were the Nuremberg Laws passed?": "1935",
+        "When did the Kristallnacht occur?": "1938",
+        "When did the Berlin Olympic Games take place under the Nazi regime?": "",
+        "When did Kristallnacht (Night of Broken Glass) occur? (Month and Year)": "",
+        "What is the timeframe for Hitler's maintenance of power?": "1934-1945",
+        "When was the new plan that aimed to control wages and prices enacted? " : "1934",
+        "When was the 4 year plan that put emphasis on autraky introduced?" : 1936",
+        "When was the hitler youth created?" : "1933",
+        "When was the hitler youth made compulsory?" : "1936",
+        "When was the lebensborn project introduced?  " : "1935",
+        "When was the Mothers Cross established?" : "1939",
+        # Move to Global War
+        "What is the timeframe for Germany's move to global war?": "1933-1939",
+        "When did Germany withdraw from the League of Nations?": "1933",
+        "When did Hitler announce German conscription and remilitarization, violating the Versailles Treaty?": "1935",
+        "When did German troops remilitarize the Rhineland? (Month and Year)": "March 1936",
+        "When did Germany annex Austria creating the Anschluss? (Month and Year)": "1938",
+        "When was the Munich Agreement signed, which gave the Sudetenland to Germany?": "1938",
+        "When did Germany invade and capture the rest of Czechoslovakia?": "1939",
+        "When was the Nazi-Soviet Non-Aggression Pact signed? (Month and Year)": "August 1939",
+        "When did Germany invade Poland, starting World War 2 in Europe? (Month and Year)": "September 1939"
     },
+    
     "The Cold War": {
         "This part is WIP": "check later",
         "This part is WIP": "check later",
