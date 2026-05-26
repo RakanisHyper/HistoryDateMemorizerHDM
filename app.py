@@ -6,7 +6,7 @@ import time
 st.set_page_config(page_title="History Date Memorizer", page_icon="😵", layout="centered")
 
 
-# ── helpers ───────────────────────────────────────────────────────────────────
+#helpers
 
 def play_local_sound(path):
     try:
@@ -21,7 +21,7 @@ def play_local_sound(path):
         pass
 
 
-# ── question bank ─────────────────────────────────────────────────────────────
+#questions
 
 TRIVIA_CATEGORIES = {
     "Mao's China and Japan": {
@@ -59,7 +59,7 @@ TRIVIA_CATEGORIES = {
         "When did Japan take over Nanjing? (Month and Year)": "December 1937",
         "When was the Tripartite Pact signed?": "1940",
         "When was the Soviet-Japanese Neutrality Pact signed?": "1941",
-        "When did Japan attack Pearl Harbor? (month and year)": "December 1941"
+        "When did Japan attack Pearl Harbor? (month and year)": "December 1941",
     },
     "Hitler and the Weimar Republic": {
         # Weimar / Rise to Power
@@ -102,40 +102,36 @@ TRIVIA_CATEGORIES = {
         "When was the Munich Agreement signed?": "1938",
         "When did Germany invade the rest of Czechoslovakia?": "1939",
         "When was the Nazi-Soviet Non-Aggression Pact signed? (Month and Year)": "August 1939",
-        "When did Germany invade Poland? (Month and Year)": "September 1939"
+        "When did Germany invade Poland? (Month and Year)": "September 1939",
     },
     "The Cold War": {
-        "When did the Yalta Conference Happen? ": "1945 ",
-        "When did the Potsdam Conference Happen? ": "1945",
-        "When did Kennan send his long telegram? ": "1946",
-        "When was the Truman Doctorine introduced? ": "1947",
-        "When was the Marshall Plan introduced? ": "1948",
-        "When did the Czech Coup happen? ": "1948",
-        "When did the Berlin Blockade start? ": "1948",
-        "When did the Berlin Blockade and aırlıft end? ": "1949",
-        "When did the Korean War start? ": "1950",
+        "When did the Yalta Conference happen?": "1945",
+        "When did the Potsdam Conference happen?": "1945",
+        "When did Kennan send his long telegram?": "1946",
+        "When was the Truman Doctrine introduced?": "1947",
+        "When was the Marshall Plan introduced?": "1948",
+        "When did the Czech Coup happen?": "1948",
+        "When did the Berlin Blockade start?": "1948",
+        "When did the Berlin Blockade and airlift end?": "1949",
+        "When did the Korean War start?": "1950",
         "When did the Korean War end?": "1953",
-        "When was the NSC68 report published": "1950",
+        "When was the NSC-68 report published?": "1950",
         "When did Fidel Castro first attempt to get into power?": "1953",
-        "What is the period of peaceful coexistence": "1956-1964",
+        "What is the period of peaceful coexistence?": "1956-1964",
         "When did Fidel Castro get into power?": "1959",
-        "When did the Cuban Misile crisis happen? ": "1962",
+        "When did the Cuban Missile Crisis happen?": "1962",
         "When did the Bay of Pigs happen?": "1961",
-        "When did the Vietnam War start": "1959",
-        "When did the Vietnamese boat attack a US destroyer that resulted in the Gulf of Tonkin Resolution": "1964",
-        "When did the Operation Rolling thunder start?": "1965",
-        "When did the MyLai Massacre happen": "1968",
-        "When did Detente start?": "1970"
-        
-
-
-        
+        "When did the Vietnam War start?": "1959",
+        "When did the Gulf of Tonkin Resolution happen?": "1964",
+        "When did Operation Rolling Thunder start?": "1965",
+        "When did the My Lai Massacre happen?": "1968",
+        "When did Detente start?": "1970",
     },
     "Mussolini": {},
-    "Historiography": None,   # None = special sub-category screen
+    "Historiography": None,   # None = special sub category
 }
 
-# Historiography sub-categories — fill these in as you go
+# Historiography 
 HISTORIOGRAPHY_CATEGORIES = {
     "Mao Historiography": {},
     "Hitler Historiography": {},
@@ -144,7 +140,7 @@ HISTORIOGRAPHY_CATEGORIES = {
 }
 
 
-# ── styles 
+#styles
 
 st.markdown("""
 <style>
@@ -229,17 +225,26 @@ div.block-container > div[data-testid="stVerticalBlock"] > div.element-container
 }
 div[role="dialog"], div[data-testid="stModal"] > div { background-color: #ffffff !important; }
 div[role="dialog"] * { color: #000000 !important; }
+
+/* eye button column stays narrow */
+div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div.stButton > button {
+    width: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    font-size: 20px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── session state defaults
+#ss defaults
 
 defaults = {
     "play_sound": None,
     "screen": "menu",
     "shuffle_mode_active": False,
     "timer_mode_active": False,
+    "repeat_mistakes_active": False,
     "start_time": None,
     "total_quiz_time": 0,
     "questions": [],
@@ -249,8 +254,10 @@ defaults = {
     "feedback_text": "",
     "feedback_color": "#ffffff",
     "input_disabled": False,
-    "wrong_questions": [],   # list of (question, correct_answer) for results screen
-    "viewing_category": None,  # name of category whose answers are being shown
+    "wrong_questions": [],        
+    "retry_queue": [],          
+    "in_retry_round": False,     
+    "viewing_category": None,
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -258,7 +265,6 @@ for k, v in defaults.items():
 
 
 def start_quiz(pool):
-    """Start a quiz from a list of (question, answer) tuples."""
     if st.session_state.shuffle_mode_active:
         random.shuffle(pool)
     st.session_state.questions = [q for q, _ in pool]
@@ -270,6 +276,8 @@ def start_quiz(pool):
     st.session_state.start_time = None
     st.session_state.total_quiz_time = 0
     st.session_state.wrong_questions = []
+    st.session_state.retry_queue = []
+    st.session_state.in_retry_round = False
     st.session_state.screen = "quiz"
     st.rerun()
 
@@ -278,7 +286,7 @@ def go_to_menu():
     st.rerun()
 
 
-# ── popup
+#popup
 
 @st.dialog("Hello!")
 def show_popup_window():
@@ -288,52 +296,28 @@ def show_popup_window():
     )
 
 
-# ── menu screen 
+#menu screen
 
 if st.session_state.screen == "menu":
     st.markdown("<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>Welcome to HDM!</b></div>", unsafe_allow_html=True)
     st.markdown("<div class='centered-title' style='margin-bottom:5px;'><i style='font-size:11pt;'>Choose your category:</i></div>", unsafe_allow_html=True)
 
-    # eye button needs to be narrow — target it via its column's second child
-    st.markdown("""
-    <style>
-    /* shrink any button whose text is just the eye emoji */
-    div.stButton > button[kind="secondary"]:has(p:only-child) {
-        font-size: 18px !important;
-    }
-    /* the eye column is always the second in its row — make it tight */
-    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div.stButton > button {
-        width: 36px !important;
-        min-width: 36px !important;
-        padding: 0 !important;
-        font-size: 20px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
     _, mid, _ = st.columns([1, 2, 1])
     with mid:
         for name, questions in TRIVIA_CATEGORIES.items():
-            has_q = bool(questions)  # False for None and empty dict
+            has_q = bool(questions)
 
             if has_q:
-                # two columns: wide for the category button, narrow for the eye
                 btn_col, eye_col = st.columns([6, 1])
                 with btn_col:
-                    if questions is None:
-                        if st.button(name, key=f"cat_{name}"):
-                            st.session_state.screen = "historiography_menu"
-                            st.rerun()
-                    else:
-                        if st.button(name, key=f"cat_{name}"):
-                            start_quiz(list(questions.items()))
+                    if st.button(name, key=f"cat_{name}"):
+                        start_quiz(list(questions.items()))
                 with eye_col:
                     if st.button("👁", key=f"eye_{name}"):
                         st.session_state.viewing_category = name
                         st.session_state.screen = "view_answers"
                         st.rerun()
             elif questions is None:
-                # Historiography — no answers to show, just the button
                 if st.button(name, key=f"cat_{name}"):
                     st.session_state.screen = "historiography_menu"
                     st.rerun()
@@ -346,11 +330,21 @@ if st.session_state.screen == "menu":
             everything = [
                 (q, a)
                 for cat in TRIVIA_CATEGORIES.values()
-                if cat  # skip None and empty
+                if cat
                 for q, a in cat.items()
             ]
             random.shuffle(everything)
             start_quiz(everything)
+
+        # repeat mistakes toggle
+        if st.session_state.repeat_mistakes_active:
+            if st.button("🔁 Repeat Mistakes ON! 🔁", type="primary", key="repeat_on"):
+                st.session_state.repeat_mistakes_active = False
+                st.rerun()
+        else:
+            if st.button("Repeat Mistakes?", key="repeat_off"):
+                st.session_state.repeat_mistakes_active = True
+                st.rerun()
 
         # shuffle toggle
         if st.session_state.shuffle_mode_active:
@@ -373,7 +367,7 @@ if st.session_state.screen == "menu":
                 st.rerun()
 
 
-# ── view answers screen 
+#view answers screen
 
 elif st.session_state.screen == "view_answers":
     cat_name = st.session_state.viewing_category
@@ -399,7 +393,7 @@ elif st.session_state.screen == "view_answers":
             go_to_menu()
 
 
-# ── historiography───
+#historiography
 
 elif st.session_state.screen == "historiography_menu":
     st.markdown("<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>Historiography</b></div>", unsafe_allow_html=True)
@@ -419,7 +413,7 @@ elif st.session_state.screen == "historiography_menu":
             go_to_menu()
 
 
-# ── quiz screen 
+#quiz screen 
 
 elif st.session_state.screen == "quiz":
     idx = st.session_state.current_index
@@ -428,8 +422,12 @@ elif st.session_state.screen == "quiz":
     if idx < total:
         if st.session_state.timer_mode_active and st.session_state.start_time is None:
             st.session_state.start_time = time.time()
+        if st.session_state.in_retry_round:
+            retry_left = len(st.session_state.retry_queue) - idx
+            st.markdown(f"<div class='centered-title' style='margin-top:15px;'><i style='font-size:11pt; color:#cc0000;'>🔁 Retry round — {retry_left} left</i></div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='centered-title' style='margin-top:15px;'><i style='font-size:11pt;'>Question {idx + 1} of {total}</i></div>", unsafe_allow_html=True)
 
-        st.markdown(f"<div class='centered-title' style='margin-top:15px;'><i style='font-size:11pt;'>Question {idx + 1} of {total}</i></div>", unsafe_allow_html=True)
         st.markdown(f"<div class='centered-title' style='margin-top:5px;'><b style='font-size:12pt;'>Score: {st.session_state.score}</b></div>", unsafe_allow_html=True)
 
         if st.session_state.timer_mode_active and st.session_state.start_time is not None:
@@ -462,7 +460,6 @@ elif st.session_state.screen == "quiz":
             with st.form(key="hdm_form", clear_on_submit=True):
                 user_input = st.text_input("", key="ans_box", disabled=st.session_state.input_disabled, label_visibility="collapsed")
 
-                # swap the button label depending on state — same position, different action
                 if st.session_state.input_disabled:
                     next_clicked = st.form_submit_button("Next Question")
                     check_clicked = False
@@ -478,10 +475,13 @@ elif st.session_state.screen == "quiz":
                         st.session_state.feedback_color = "#00cc44"
                         st.session_state.play_sound = "correctsound.mp3"
                     else:
-                        st.session_state.wrong_questions.append(
-                            (st.session_state.questions[idx], st.session_state.answers[idx])
-                        )
-                        st.session_state.feedback_text = f"✗ INCORRECT — answer was {st.session_state.answers[idx].upper()} ✗"
+                        q = st.session_state.questions[idx]
+                        a = st.session_state.answers[idx]
+                        if not st.session_state.in_retry_round:
+                            st.session_state.wrong_questions.append((q, a))
+                        if st.session_state.repeat_mistakes_active:
+                            st.session_state.retry_queue.append((q, a))
+                        st.session_state.feedback_text = f"✗ INCORRECT — answer was {a.upper()} ✗"
                         st.session_state.feedback_color = "#cc0000"
                         st.session_state.play_sound = "incorrectsound.mp3"
                     st.session_state.input_disabled = True
@@ -504,19 +504,34 @@ elif st.session_state.screen == "quiz":
                     unsafe_allow_html=True,
                 )
 
-           
             st.write("")
             if st.button("Give Up", key="give_up_btn"):
                 go_to_menu()
 
     else:
+        # finished all questions in this pass
         if st.session_state.timer_mode_active and st.session_state.start_time is not None:
             st.session_state.total_quiz_time = time.time() - st.session_state.start_time
-        st.session_state.screen = "end"
-        st.rerun()
+
+        if st.session_state.repeat_mistakes_active and st.session_state.retry_queue:
+            # load the retry round — shuffle so it doesn't feel like a replay
+            pool = st.session_state.retry_queue[:]
+            random.shuffle(pool)
+            st.session_state.questions = [q for q, _ in pool]
+            st.session_state.answers = [a for _, a in pool]
+            st.session_state.retry_queue = []
+            st.session_state.current_index = 0
+            st.session_state.feedback_text = ""
+            st.session_state.input_disabled = False
+            st.session_state.in_retry_round = True
+            st.rerun()
+        else:
+            st.session_state.in_retry_round = False
+            st.session_state.screen = "end"
+            st.rerun()
 
 
-# ── end screen 
+#end screen
 
 elif st.session_state.screen == "end":
     total = len(st.session_state.questions)
@@ -552,7 +567,7 @@ elif st.session_state.screen == "end":
             go_to_menu()
 
 
-# ── results screen
+#results screen
 
 elif st.session_state.screen == "results":
     wrong = st.session_state.wrong_questions
@@ -579,8 +594,6 @@ elif st.session_state.screen == "results":
         if st.button("Back to main menu", key="results_menu_btn"):
             go_to_menu()
 
-
-# ── info button
 
 if st.button("ℹ️", key="true_anchored_bottom_left_btn"):
     show_popup_window()
