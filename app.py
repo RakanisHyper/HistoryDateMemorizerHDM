@@ -338,11 +338,11 @@ if st.session_state.screen == "menu":
 
         # repeat mistakes toggle
         if st.session_state.repeat_mistakes_active:
-            if st.button("🔁 Repeat Mistakes ON! 🔁", type="primary", key="repeat_on"):
+            if st.button("Repeating your mistakes. ", type="primary", key="repeat_on"):
                 st.session_state.repeat_mistakes_active = False
                 st.rerun()
         else:
-            if st.button("Repeat Mistakes?", key="repeat_off"):
+            if st.button("Repeat Mistakes, kind of broken", key="repeat_off"):
                 st.session_state.repeat_mistakes_active = True
                 st.rerun()
 
