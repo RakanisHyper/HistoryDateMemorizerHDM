@@ -342,7 +342,7 @@ if st.session_state.screen == "menu":
                 st.session_state.repeat_mistakes_active = False
                 st.rerun()
         else:
-            if st.button("Repeat Mistakes, kind of broken", key="repeat_off"):
+            if st.button("Repeat Mistakes, partially functioning", key="repeat_off"):
                 st.session_state.repeat_mistakes_active = True
                 st.rerun()
 
