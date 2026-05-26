@@ -59,7 +59,7 @@ TRIVIA_CATEGORIES = {
         "When did Japan take over Nanjing? (Month and Year)": "December 1937",
         "When was the Tripartite Pact signed?": "1940",
         "When was the Soviet-Japanese Neutrality Pact signed?": "1941",
-        "When did Japan attack Pearl Harbor?": "1941",
+        "When did Japan attack Pearl Harbor?": "1941"
     },
     "Hitler and the Weimar Republic": {
         # Weimar / Rise to Power
@@ -102,9 +102,34 @@ TRIVIA_CATEGORIES = {
         "When was the Munich Agreement signed?": "1938",
         "When did Germany invade the rest of Czechoslovakia?": "1939",
         "When was the Nazi-Soviet Non-Aggression Pact signed? (Month and Year)": "August 1939",
-        "When did Germany invade Poland? (Month and Year)": "September 1939",
+        "When did Germany invade Poland? (Month and Year)": "September 1939"
     },
-    "The Cold War": {},
+    "The Cold War": {
+        "When did the Yalta Conference Happen? ": "1945 ",
+        "When did the Potsdam Conference Happen? ": "1945",
+        "When did Kennan send his long telegram? ": "1946",
+        "When was the Truman Doctorine introduced? ": "1947",
+        "When was the Marshall Plan introduced? ": "1948",
+        "When did the Czech Coup happen? ": "1948",
+        "When did the Berlin Blockade start? ": "1948",
+        "When did the Berlin Blockade end? ": "1949",
+        "When did the Korean War start? ": "1950",
+        "When did the Korean War end?": "1953",
+        "When was the NSC68 report published": "1950",
+        "When did Fidel Castro attempt to get into power?": "1953",
+        "When did Fidel Castro get into power?": "1959",
+        "When did the Cuban Misile crisis happen? ": "1962",
+        "When did the Bay of Pigs happen?": "1963",
+        "When did the Vietnam War start": "1959",
+        "When did the Vietnamese boat attack a US destroyer that resulted in the Gulf of Tonkin Resolution": "1964",
+        "When did the Operation Rolling thunder start?": "1965",
+        "When did the MyLai Massacre happen": "1968",
+        "When did Detente start?": "1968",
+        
+
+
+        
+    },
     "Mussolini": {},
     "Historiography": None,   # None = special sub-category screen
 }
