@@ -59,7 +59,7 @@ TRIVIA_CATEGORIES = {
         "When did Japan take over Nanjing? (Month and Year)": "December 1937",
         "When was the Tripartite Pact signed?": "1940",
         "When was the Soviet-Japanese Neutrality Pact signed?": "1941",
-        "When did Japan attack Pearl Harbor?(month and year)": "December 1941"
+        "When did Japan attack Pearl Harbor? (month and year)": "December 1941"
     },
     "Hitler and the Weimar Republic": {
         # Weimar / Rise to Power
@@ -116,7 +116,7 @@ TRIVIA_CATEGORIES = {
         "When did the Korean War start? ": "1950",
         "When did the Korean War end?": "1953",
         "When was the NSC68 report published": "1950",
-        "When did Fidel Castro fırst attempt to get into power?": "1953",
+        "When did Fidel Castro first attempt to get into power?": "1953",
         "What is the period of peaceful coexistence": "1956-1964",
         "When did Fidel Castro get into power?": "1959",
         "When did the Cuban Misile crisis happen? ": "1962",
@@ -125,7 +125,7 @@ TRIVIA_CATEGORIES = {
         "When did the Vietnamese boat attack a US destroyer that resulted in the Gulf of Tonkin Resolution": "1964",
         "When did the Operation Rolling thunder start?": "1965",
         "When did the MyLai Massacre happen": "1968",
-        "When did Detente start?": "1970",
+        "When did Detente start?": "1970"
         
 
 
