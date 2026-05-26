@@ -55,11 +55,11 @@ TRIVIA_CATEGORIES = {
         "When was Manchuria self-proclaimed Manchukuo by the Japanese? (Month and Year)": "March 1931",
         "When did China appeal to the LON forming the Lytton Report? (Month and Year)": "December 1931",
         "When was the Lytton Report published?": "1932",
-        "When did the Marco Polo Bridge incident happen?": "1937",
+        "When did the Marco Polo Bridge incident happen (month and year)?": "July 1937",
         "When did Japan take over Nanjing? (Month and Year)": "December 1937",
         "When was the Tripartite Pact signed?": "1940",
         "When was the Soviet-Japanese Neutrality Pact signed?": "1941",
-        "When did Japan attack Pearl Harbor?": "1941"
+        "When did Japan attack Pearl Harbor?(month and year)": "December 1941"
     },
     "Hitler and the Weimar Republic": {
         # Weimar / Rise to Power
@@ -82,11 +82,11 @@ TRIVIA_CATEGORIES = {
         "When was the Enabling Act passed? (Month and Year)": "March 1933",
         "What is the timeframe for Hitler's rise to power?": "1923-1933",
         # Maintenance of Power
-        "When did the Night of the Long Knives happen? (Month and Year)": "January 1934",
+        "When did the Night of the Long Knives happen? (Month and Year)": "June 1934",
         "When were the Nuremberg Laws passed?": "1935",
         "When did the Berlin Olympic Games take place?": "1936",
         "When did Kristallnacht occur? (Month and Year)": "November 1938",
-        "What is the timeframe for Hitler's maintenance of power?": "1934-1945",
+        "What is the timeframe for Hitler's maintenance of power for paper 2?": "1933-1939",
         "When was the New Plan controlling wages and prices enacted?": "1934",
         "When was the Four Year Plan emphasising autarky introduced?": "1936",
         "When was the Hitler Youth created?": "1933",
@@ -98,7 +98,7 @@ TRIVIA_CATEGORIES = {
         "When did Germany withdraw from the League of Nations?": "1933",
         "When did Hitler announce conscription and remilitarization?": "1935",
         "When did German troops remilitarize the Rhineland? (Month and Year)": "March 1936",
-        "When did Germany annex Austria (Anschluss)? (Month and Year)": "1938",
+        "When did Germany annex Austria (Anschluss)?": "1938",
         "When was the Munich Agreement signed?": "1938",
         "When did Germany invade the rest of Czechoslovakia?": "1939",
         "When was the Nazi-Soviet Non-Aggression Pact signed? (Month and Year)": "August 1939",
@@ -112,19 +112,20 @@ TRIVIA_CATEGORIES = {
         "When was the Marshall Plan introduced? ": "1948",
         "When did the Czech Coup happen? ": "1948",
         "When did the Berlin Blockade start? ": "1948",
-        "When did the Berlin Blockade end? ": "1949",
+        "When did the Berlin Blockade and aırlıft end? ": "1949",
         "When did the Korean War start? ": "1950",
         "When did the Korean War end?": "1953",
         "When was the NSC68 report published": "1950",
-        "When did Fidel Castro attempt to get into power?": "1953",
+        "When did Fidel Castro fırst attempt to get into power?": "1953",
+        "What is the period of peaceful coexistence": "1956-1964",
         "When did Fidel Castro get into power?": "1959",
         "When did the Cuban Misile crisis happen? ": "1962",
-        "When did the Bay of Pigs happen?": "1963",
+        "When did the Bay of Pigs happen?": "1961",
         "When did the Vietnam War start": "1959",
         "When did the Vietnamese boat attack a US destroyer that resulted in the Gulf of Tonkin Resolution": "1964",
         "When did the Operation Rolling thunder start?": "1965",
         "When did the MyLai Massacre happen": "1968",
-        "When did Detente start?": "1968",
+        "When did Detente start?": "1970",
         
 
 
