@@ -139,7 +139,7 @@ TRIVIA_CATEGORIES = {
         "When does Italy leave the Leauge of Nations and sign the Roma-Berlin axis with Hitler?": "1936",
         "When did Mussolini invade Albania?": "1939",
         "When was the Pact of steel that promised cooperation between Hitler and Mussolini signed?": "1939"
-    {
+    }
 
         
    
