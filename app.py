@@ -127,7 +127,20 @@ TRIVIA_CATEGORIES = {
         "When did the My Lai Massacre happen?": "1968",
         "When did Detente start?": "1970",
     },
-    "Mussolini": {},
+    "Mussolini": {
+        "When was Mussolini elected as chancellor?": "1922",
+        "When is the Italian ambassador murdered in Greece that results in Italian invasion of Corfu?": "1923",
+        "When did the Wal Wal incident that resulted in the death of 2 Italian and 100 Abyssinian soldiers? (Month and Year)": "December 1934",
+        "When did Abyssinia appeal to LON after the Wal Wal incident? (Month and Year)": "January 1935",
+        "When was the Stresa Front formed between Italy, Britain and France that made Mussolini think that they were allowing his expansion into Abyssinia? (Month and Year)": "April 1935",
+        "When does Italy invade Abyssinia that results in Haile Selassie fleeing the country? (Month and Year)": "October 1935",
+        "What was the name of the pact that was leaked to the press and promised Italy 2 thirds of Abyssinia?": "Hoare Laval Pact",
+        "When does Italy leave the Leauge of Nations and sign the Roma-Berlin axis with Hitler?": "1936",
+        "When did Mussolini invade Albania?": "1939",
+        "When was the Pact of steel that promised cooperation between Hitler and Mussolini signed?": "1939"
+
+        
+    },
     "Historiography": None,   # None = special sub category
 }
 
