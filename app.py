@@ -141,9 +141,7 @@ TRIVIA_CATEGORIES = {
         "When was the Pact of steel that promised cooperation between Hitler and Mussolini signed?": "1939"
 
         
-    },
-    "Historiography": None,   # None = special sub category
-}
+   
 
 # Historiography 
 HISTORIOGRAPHY_CATEGORIES = {
