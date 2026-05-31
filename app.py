@@ -128,6 +128,7 @@ TRIVIA_CATEGORIES = {
         "When did Detente start?": "1970",
     },
     "Mussolini": {
+        "What is the timeframe for Italian Expansion": "1922-1939",
         "When was Mussolini elected as chancellor?": "1922",
         "When is the Italian ambassador murdered in Greece that results in Italian invasion of Corfu?": "1923",
         "When did the Wal Wal incident that resulted in the death of 2 Italian and 100 Abyssinian soldiers? (Month and Year)": "December 1934",
