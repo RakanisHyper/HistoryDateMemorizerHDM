@@ -140,6 +140,8 @@ TRIVIA_CATEGORIES = {
         "When did Mussolini invade Albania?": "1939",
         "When was the Pact of steel that promised cooperation between Hitler and Mussolini signed?": "1939"
     }
+ }
+    
 
         
    
