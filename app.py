@@ -168,7 +168,7 @@ for k, v in defaults.items():
         st.session_state[k] = v
 
 dm = st.session_state.dark_mode
-bg = "#000000" if dm else "#ffffff"
+bg = "#000000" if dm else "#121212"
 fg = "#f0f0f0" if dm else "#000000"
 card_border = "#444444" if dm else "#000000"
 input_bg = "#1e1e1e" if dm else "#ffffff"
