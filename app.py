@@ -6,8 +6,6 @@ import time
 st.set_page_config(page_title="History Date Memorizer", page_icon="😵", layout="centered")
 
 
-#helpers
-
 def play_local_sound(path):
     try:
         with open(path, "rb") as f:
@@ -20,8 +18,6 @@ def play_local_sound(path):
     except FileNotFoundError:
         pass
 
-
-#questions
 
 TRIVIA_CATEGORIES = {
     "Mao's China and Japan": {
@@ -49,7 +45,6 @@ TRIVIA_CATEGORIES = {
         "When did the Cultural Revolution end?": "1976",
         "What is the timeframe for Mao's rise to power?": "1927-1949",
         "What is the timeframe for Mao's maintenance of power?": "1949-1976",
-        # Japan
         "What is the timeframe for Japan's move to global war?": "1931-1941",
         "When did the bomb explode on the Southern Manchurian railway? (Month and Year)": "September 1931",
         "When was Manchuria self-proclaimed Manchukuo by the Japanese? (Month and Year)": "March 1931",
@@ -62,7 +57,6 @@ TRIVIA_CATEGORIES = {
         "When did Japan attack Pearl Harbor? (month and year)": "December 1941",
     },
     "Hitler and the Weimar Republic": {
-        # Weimar / Rise to Power
         "When was the Treaty of Versailles signed?": "1918",
         "When did the Spartacist Revolution happen? (Month and Year)": "January 1919",
         "When was the Nazi party founded?": "1920",
@@ -81,7 +75,6 @@ TRIVIA_CATEGORIES = {
         "When did the Reichstag fire occur? (Month and Year)": "February 1933",
         "When was the Enabling Act passed? (Month and Year)": "March 1933",
         "What is the timeframe for Hitler's rise to power?": "1923-1933",
-        # Maintenance of Power
         "When did the Night of the Long Knives happen? (Month and Year)": "June 1934",
         "When were the Nuremberg Laws passed?": "1935",
         "When did the Berlin Olympic Games take place?": "1936",
@@ -93,7 +86,6 @@ TRIVIA_CATEGORIES = {
         "When was the Hitler Youth made compulsory?": "1936",
         "When was the Lebensborn project introduced?": "1935",
         "When was the Mother's Cross established?": "1939",
-        # Move to Global War
         "What is the timeframe for Germany's move to global war?": "1933-1939",
         "When did Germany withdraw from the League of Nations?": "1933",
         "When did Hitler announce conscription and remilitarization?": "1935",
@@ -138,15 +130,10 @@ TRIVIA_CATEGORIES = {
         "What was the name of the pact that was leaked to the press and promised Italy 2 thirds of Abyssinia?": "Hoare Laval Pact",
         "When does Italy leave the Leauge of Nations and sign the Roma-Berlin axis with Hitler?": "1936",
         "When did Mussolini invade Albania?": "1939",
-        "When was the Pact of steel that promised cooperation between Hitler and Mussolini signed?": "1939"
-    }
- }
-    
+        "When was the Pact of steel that promised cooperation between Hitler and Mussolini signed?": "1939",
+    },
+}
 
-        
-   
-
-# Historiography 
 HISTORIOGRAPHY_CATEGORIES = {
     "Mao Historiography": {},
     "Hitler Historiography": {},
@@ -154,30 +141,63 @@ HISTORIOGRAPHY_CATEGORIES = {
     "Mussolini Historiography": {},
 }
 
+defaults = {
+    "play_sound": None,
+    "screen": "menu",
+    "shuffle_mode_active": False,
+    "timer_mode_active": False,
+    "repeat_mistakes_active": False,
+    "dark_mode": False,
+    "start_time": None,
+    "total_quiz_time": 0,
+    "questions": [],
+    "answers": [],
+    "current_index": 0,
+    "score": 0,
+    "feedback_text": "",
+    "feedback_color": "#ffffff",
+    "input_disabled": False,
+    "wrong_questions": [],
+    "retry_queue": [],
+    "retry_total": 0,
+    "in_retry_round": False,
+    "viewing_category": None,
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
 
-#styles
+dm = st.session_state.dark_mode
+bg = "#111111" if dm else "#ffffff"
+fg = "#f0f0f0" if dm else "#000000"
+card_border = "#444444" if dm else "#000000"
+input_bg = "#1e1e1e" if dm else "#ffffff"
+btn_bg = "#f0f0f0" if dm else "#000000"
+btn_fg = "#000000" if dm else "#ffffff"
+btn_hover = "#ff0000"
+wrong_color = "#ff4444" if dm else "#cc0000"
 
-st.markdown("""
+st.markdown(f"""
 <style>
-html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-    background-color: #ffffff !important;
-}
-h1, h2, h3, p, span, label, div {
-    color: #000000 !important;
+html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
+    background-color: {bg} !important;
+}}
+h1, h2, h3, p, span, label, div {{
+    color: {fg} !important;
     font-family: 'Helvetica', sans-serif !important;
-}
-[data-testid="stVerticalBlock"] {
+}}
+[data-testid="stVerticalBlock"] {{
     text-align: center !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 0.5rem !important;
-}
-.centered-title {
+}}
+.centered-title {{
     text-align: center !important;
     width: 100% !important;
     display: block !important;
-}
-[data-testid="stForm"] {
+}}
+[data-testid="stForm"] {{
     border: none !important;
     padding: 0 !important;
     background-color: transparent !important;
@@ -185,19 +205,19 @@ h1, h2, h3, p, span, label, div {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-}
-input {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    border: 2px solid #000000 !important;
+}}
+input {{
+    background-color: {input_bg} !important;
+    color: {fg} !important;
+    border: 2px solid {fg} !important;
     border-radius: 4px !important;
     text-align: center !important;
     font-size: 13pt !important;
-}
+}}
 div.stButton > button,
-div.stFormSubmitButton > button {
-    background-color: #000000 !important;
-    color: #ffffff !important;
+div.stFormSubmitButton > button {{
+    background-color: {btn_bg} !important;
+    color: {btn_fg} !important;
     border: none !important;
     border-radius: 0px !important;
     font-family: 'Helvetica', sans-serif !important;
@@ -209,14 +229,13 @@ div.stFormSubmitButton > button {
     margin: 0 auto !important;
     display: block !important;
     cursor: pointer !important;
-}
-div.stButton > button *, div.stFormSubmitButton > button * { color: #ffffff !important; }
-div.stButton > button:hover, div.stFormSubmitButton > button:hover { background-color: #ff0000 !important; }
-div.stButton > button[data-testid="baseButton-primary"] { background-color: #ff0000 !important; }
-div.stButton > button[data-testid="baseButton-primary"]:hover { background-color: #ffffff !important; }
+}}
+div.stButton > button *, div.stFormSubmitButton > button * {{ color: {btn_fg} !important; }}
+div.stButton > button:hover, div.stFormSubmitButton > button:hover {{ background-color: {btn_hover} !important; }}
+div.stButton > button[data-testid="baseButton-primary"] {{ background-color: #ff0000 !important; }}
+div.stButton > button[data-testid="baseButton-primary"]:hover {{ background-color: {bg} !important; }}
 
-/* pinned info button bottom-left */
-div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child {
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child {{
     position: fixed !important;
     bottom: 20px !important;
     left: 20px !important;
@@ -225,8 +244,8 @@ div.block-container > div[data-testid="stVerticalBlock"] > div.element-container
     z-index: 999999 !important;
     margin: 0 !important;
     padding: 0 !important;
-}
-div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child div.stButton > button {
+}}
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child div.stButton > button {{
     width: 40px !important;
     height: 40px !important;
     min-width: 40px !important;
@@ -234,49 +253,21 @@ div.block-container > div[data-testid="stVerticalBlock"] > div.element-container
     margin: 0 !important;
     font-size: 14pt !important;
     border-radius: 0px !important;
-}
-div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child div.stButton > button:hover {
+}}
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child div.stButton > button:hover {{
     background-color: #ff0000 !important;
-}
-div[role="dialog"], div[data-testid="stModal"] > div { background-color: #ffffff !important; }
-div[role="dialog"] * { color: #000000 !important; }
+}}
+div[role="dialog"], div[data-testid="stModal"] > div {{ background-color: {bg} !important; }}
+div[role="dialog"] * {{ color: {fg} !important; }}
 
-/* eye button column stays narrow */
-div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div.stButton > button {
+div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child div.stButton > button {{
     width: 36px !important;
     min-width: 36px !important;
     padding: 0 !important;
     font-size: 20px !important;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
-
-
-#ss defaults
-
-defaults = {
-    "play_sound": None,
-    "screen": "menu",
-    "shuffle_mode_active": False,
-    "timer_mode_active": False,
-    "repeat_mistakes_active": False,
-    "start_time": None,
-    "total_quiz_time": 0,
-    "questions": [],
-    "answers": [],
-    "current_index": 0,
-    "score": 0,
-    "feedback_text": "",
-    "feedback_color": "#ffffff",
-    "input_disabled": False,
-    "wrong_questions": [],        
-    "retry_queue": [],          
-    "in_retry_round": False,     
-    "viewing_category": None,
-}
-for k, v in defaults.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
 
 
 def start_quiz(pool):
@@ -292,6 +283,7 @@ def start_quiz(pool):
     st.session_state.total_quiz_time = 0
     st.session_state.wrong_questions = []
     st.session_state.retry_queue = []
+    st.session_state.retry_total = 0
     st.session_state.in_retry_round = False
     st.session_state.screen = "quiz"
     st.rerun()
@@ -301,8 +293,6 @@ def go_to_menu():
     st.rerun()
 
 
-#popup
-
 @st.dialog("Hello!")
 def show_popup_window():
     st.write(
@@ -311,10 +301,15 @@ def show_popup_window():
     )
 
 
-#menu screen
-
 if st.session_state.screen == "menu":
-    st.markdown("<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>Welcome to HDM!</b></div>", unsafe_allow_html=True)
+    top_left, _, _ = st.columns([1, 3, 1])
+    with top_left:
+        dm_label = "☀️" if st.session_state.dark_mode else "🌙"
+        if st.button(dm_label, key="dark_mode_toggle"):
+            st.session_state.dark_mode = not st.session_state.dark_mode
+            st.rerun()
+
+    st.markdown("<div class='centered-title' style='margin-top:10px;'><b style='font-size:18pt;'>Welcome to HDM!</b></div>", unsafe_allow_html=True)
     st.markdown("<div class='centered-title' style='margin-bottom:5px;'><i style='font-size:11pt;'>Choose your category:</i></div>", unsafe_allow_html=True)
 
     _, mid, _ = st.columns([1, 2, 1])
@@ -339,7 +334,7 @@ if st.session_state.screen == "menu":
             else:
                 st.button(f"{name} (soon)", key=f"cat_{name}", disabled=True)
 
-        st.markdown("<div class='centered-title' style='margin-top:15px; padding-bottom:10px;'><b style='font-size:14pt;'>Challenges</b></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='centered-title' style='margin-top:15px; padding-bottom:10px;'><b style='font-size:14pt;'>Challenges</b></div>", unsafe_allow_html=True)
 
         if st.button("MIX OF EVERYTHING", key="mix_btn"):
             everything = [
@@ -351,7 +346,6 @@ if st.session_state.screen == "menu":
             random.shuffle(everything)
             start_quiz(everything)
 
-        # repeat mistakes toggle
         if st.session_state.repeat_mistakes_active:
             if st.button("Repeating your mistakes. ", type="primary", key="repeat_on"):
                 st.session_state.repeat_mistakes_active = False
@@ -361,7 +355,6 @@ if st.session_state.screen == "menu":
                 st.session_state.repeat_mistakes_active = True
                 st.rerun()
 
-        # shuffle toggle
         if st.session_state.shuffle_mode_active:
             if st.button("🔥 Shuffling Questions! 🔥", type="primary", key="shuf_on"):
                 st.session_state.shuffle_mode_active = False
@@ -371,7 +364,6 @@ if st.session_state.screen == "menu":
                 st.session_state.shuffle_mode_active = True
                 st.rerun()
 
-        # timer toggle
         if st.session_state.timer_mode_active:
             if st.button("⏱️ Timer Mode Active! ⏱️", type="primary", key="timer_on"):
                 st.session_state.timer_mode_active = False
@@ -382,8 +374,6 @@ if st.session_state.screen == "menu":
                 st.rerun()
 
 
-#view answers screen
-
 elif st.session_state.screen == "view_answers":
     cat_name = st.session_state.viewing_category
     questions = TRIVIA_CATEGORIES.get(cat_name, {})
@@ -393,9 +383,9 @@ elif st.session_state.screen == "view_answers":
 
     for q, a in questions.items():
         st.markdown(
-            f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid #000; padding-left:12px;'>"
+            f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid {card_border}; padding-left:12px;'>"
             f"<b style='font-size:11pt;'>{q}</b><br>"
-            f"<span style='font-size:11pt; color:#cc0000 !important;'>&#8594; {a.upper()}</span>"
+            f"<span style='font-size:11pt; color:{wrong_color} !important;'>&#8594; {a.upper()}</span>"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -407,8 +397,6 @@ elif st.session_state.screen == "view_answers":
             st.session_state.viewing_category = None
             go_to_menu()
 
-
-#historiography
 
 elif st.session_state.screen == "historiography_menu":
     st.markdown("<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>Historiography</b></div>", unsafe_allow_html=True)
@@ -428,8 +416,6 @@ elif st.session_state.screen == "historiography_menu":
             go_to_menu()
 
 
-#quiz screen 
-
 elif st.session_state.screen == "quiz":
     idx = st.session_state.current_index
     total = len(st.session_state.questions)
@@ -437,9 +423,17 @@ elif st.session_state.screen == "quiz":
     if idx < total:
         if st.session_state.timer_mode_active and st.session_state.start_time is None:
             st.session_state.start_time = time.time()
+
         if st.session_state.in_retry_round:
-            retry_left = len(st.session_state.retry_queue) - idx
-            st.markdown(f"<div class='centered-title' style='margin-top:15px;'><i style='font-size:11pt; color:#cc0000;'>🔁 Retry round — {retry_left} left</i></div>", unsafe_allow_html=True)
+            retry_done = idx
+            retry_total = st.session_state.retry_total
+            retry_left = retry_total - retry_done
+            st.markdown(
+                f"<div class='centered-title' style='margin-top:15px;'>"
+                f"<i style='font-size:11pt; color:#cc0000;'>🔁 Retry round — question {retry_done + 1} of {retry_total} ({retry_left} remaining)</i>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
         else:
             st.markdown(f"<div class='centered-title' style='margin-top:15px;'><i style='font-size:11pt;'>Question {idx + 1} of {total}</i></div>", unsafe_allow_html=True)
 
@@ -450,7 +444,7 @@ elif st.session_state.screen == "quiz":
             st.components.v1.html(f"""
             <style>
                 body {{ margin:0; padding:0; background:transparent; }}
-                .t {{ text-align:center; font-family:Helvetica,sans-serif; font-size:11pt; font-weight:bold; color:#000; }}
+                .t {{ text-align:center; font-family:Helvetica,sans-serif; font-size:11pt; font-weight:bold; color:{fg}; }}
             </style>
             <div class="t">Time Elapsed: <span id="t">00:00.000</span></div>
             <script>
@@ -524,16 +518,15 @@ elif st.session_state.screen == "quiz":
                 go_to_menu()
 
     else:
-        # finished all questions in this pass
         if st.session_state.timer_mode_active and st.session_state.start_time is not None:
             st.session_state.total_quiz_time = time.time() - st.session_state.start_time
 
         if st.session_state.repeat_mistakes_active and st.session_state.retry_queue:
-            # load the retry round — shuffle so it doesn't feel like a replay
             pool = st.session_state.retry_queue[:]
             random.shuffle(pool)
             st.session_state.questions = [q for q, _ in pool]
             st.session_state.answers = [a for _, a in pool]
+            st.session_state.retry_total = len(pool)
             st.session_state.retry_queue = []
             st.session_state.current_index = 0
             st.session_state.feedback_text = ""
@@ -545,8 +538,6 @@ elif st.session_state.screen == "quiz":
             st.session_state.screen = "end"
             st.rerun()
 
-
-#end screen
 
 elif st.session_state.screen == "end":
     total = len(st.session_state.questions)
@@ -582,8 +573,6 @@ elif st.session_state.screen == "end":
             go_to_menu()
 
 
-#results screen
-
 elif st.session_state.screen == "results":
     wrong = st.session_state.wrong_questions
 
@@ -596,9 +585,9 @@ elif st.session_state.screen == "results":
 
         for q, a in wrong:
             st.markdown(
-                f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid #000; padding-left:12px;'>"
+                f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid {card_border}; padding-left:12px;'>"
                 f"<b style='font-size:11pt;'>{q}</b><br>"
-                f"<span style='font-size:11pt; color:#cc0000 !important;'>→ {a.upper()}</span>"
+                f"<span style='font-size:11pt; color:{wrong_color} !important;'>→ {a.upper()}</span>"
                 f"</div>",
                 unsafe_allow_html=True,
             )
