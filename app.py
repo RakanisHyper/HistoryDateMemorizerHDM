@@ -168,12 +168,12 @@ for k, v in defaults.items():
         st.session_state[k] = v
 
 dm = st.session_state.dark_mode
-bg = "#111111" if dm else "#ffffff"
+bg = "#000000" if dm else "#ffffff"
 fg = "#f0f0f0" if dm else "#000000"
 card_border = "#444444" if dm else "#000000"
 input_bg = "#1e1e1e" if dm else "#ffffff"
-btn_bg = "#f0f0f0" if dm else "#000000"
-btn_fg = "#000000" if dm else "#ffffff"
+btn_bg = "#000000"
+btn_fg = "#ffffff"
 btn_hover = "#ff0000"
 wrong_color = "#ff4444" if dm else "#cc0000"
 
@@ -235,6 +235,29 @@ div.stButton > button:hover, div.stFormSubmitButton > button:hover {{ background
 div.stButton > button[data-testid="baseButton-primary"] {{ background-color: #ff0000 !important; }}
 div.stButton > button[data-testid="baseButton-primary"]:hover {{ background-color: {bg} !important; }}
 
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(2) {{
+    position: fixed !important;
+    top: 20px !important;
+    left: 20px !important;
+    width: 40px !important;
+    height: 40px !important;
+    z-index: 999999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(2) div.stButton > button {{
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 14pt !important;
+    border-radius: 0px !important;
+}}
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(2) div.stButton > button:hover {{
+    background-color: #ff0000 !important;
+}}
+
 div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child {{
     position: fixed !important;
     bottom: 20px !important;
@@ -269,6 +292,11 @@ div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child di
 </style>
 """, unsafe_allow_html=True)
 
+dm_label = "☀️" if st.session_state.dark_mode else "🌙"
+if st.button(dm_label, key="dark_mode_toggle"):
+    st.session_state.dark_mode = not st.session_state.dark_mode
+    st.rerun()
+
 
 def start_quiz(pool):
     if st.session_state.shuffle_mode_active:
@@ -302,13 +330,6 @@ def show_popup_window():
 
 
 if st.session_state.screen == "menu":
-    top_left, _, _ = st.columns([1, 3, 1])
-    with top_left:
-        dm_label = "☀️" if st.session_state.dark_mode else "🌙"
-        if st.button(dm_label, key="dark_mode_toggle"):
-            st.session_state.dark_mode = not st.session_state.dark_mode
-            st.rerun()
-
     st.markdown("<div class='centered-title' style='margin-top:10px;'><b style='font-size:18pt;'>Welcome to HDM!</b></div>", unsafe_allow_html=True)
     st.markdown("<div class='centered-title' style='margin-bottom:5px;'><i style='font-size:11pt;'>Choose your category:</i></div>", unsafe_allow_html=True)
 
