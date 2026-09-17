@@ -253,6 +253,10 @@ div.block-container > div[data-testid="stVerticalBlock"] > div.element-container
     padding: 0 !important;
     margin: 0 !important;
     font-size: 14pt !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     border-radius: 0px !important;
 }}
 div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(2) div.stButton > button:hover {{
@@ -276,6 +280,10 @@ div.block-container > div[data-testid="stVerticalBlock"] > div.element-container
     padding: 0 !important;
     margin: 0 !important;
     font-size: 14pt !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     border-radius: 0px !important;
 }}
 div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(3) div.stButton > button:hover {{
