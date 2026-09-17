@@ -157,6 +157,7 @@ defaults = {
     "feedback_text": "",
     "feedback_color": "#ffffff",
     "input_disabled": False,
+    "last_submitted_text": "",
     "wrong_questions": [],
     "retry_queue": [],
     "retry_total": 0,
@@ -307,6 +308,7 @@ def start_quiz(pool):
     st.session_state.score = 0
     st.session_state.feedback_text = ""
     st.session_state.input_disabled = False
+    st.session_state.last_submitted_text = ""
     st.session_state.start_time = None
     st.session_state.total_quiz_time = 0
     st.session_state.wrong_questions = []
@@ -487,41 +489,41 @@ elif st.session_state.screen == "quiz":
 
         col = st.columns([1, 2, 1])[1]
         with col:
-            with st.form(key="hdm_form", clear_on_submit=True):
-                user_input = st.text_input("", key="ans_box", disabled=st.session_state.input_disabled, label_visibility="collapsed")
-
+            with st.form(key=f"hdm_form_{idx}_{st.session_state.input_disabled}", clear_on_submit=not st.session_state.input_disabled):
                 if st.session_state.input_disabled:
-                    next_clicked = st.form_submit_button("Next Question")
-                    check_clicked = False
+                    user_input = st.text_input("", value=st.session_state.last_submitted_text, key="ans_box", read_only=True, label_visibility="collapsed")
+                    form_submitted = st.form_submit_button("Next Question")
                 else:
-                    check_clicked = st.form_submit_button("Check Answer")
-                    next_clicked = False
+                    user_input = st.text_input("", key="ans_box", label_visibility="collapsed")
+                    form_submitted = st.form_submit_button("Check Answer")
 
-                if check_clicked:
-                    correct = st.session_state.answers[idx].strip().lower()
-                    if user_input.strip().lower() == correct:
-                        st.session_state.score += 1
-                        st.session_state.feedback_text = "✓ CORRECT! ✓"
-                        st.session_state.feedback_color = "#00cc44"
-                        st.session_state.play_sound = "correctsound.mp3"
+                if form_submitted:
+                    if st.session_state.input_disabled:
+                        st.session_state.current_index += 1
+                        st.session_state.feedback_text = ""
+                        st.session_state.input_disabled = False
+                        st.session_state.last_submitted_text = ""
+                        st.rerun()
                     else:
-                        q = st.session_state.questions[idx]
-                        a = st.session_state.answers[idx]
-                        if not st.session_state.in_retry_round:
-                            st.session_state.wrong_questions.append((q, a))
-                        if st.session_state.repeat_mistakes_active:
-                            st.session_state.retry_queue.append((q, a))
-                        st.session_state.feedback_text = f"✗ INCORRECT — answer was {a.upper()} ✗"
-                        st.session_state.feedback_color = "#cc0000"
-                        st.session_state.play_sound = "incorrectsound.mp3"
-                    st.session_state.input_disabled = True
-                    st.rerun()
-
-                if next_clicked:
-                    st.session_state.current_index += 1
-                    st.session_state.feedback_text = ""
-                    st.session_state.input_disabled = False
-                    st.rerun()
+                        st.session_state.last_submitted_text = user_input
+                        correct = st.session_state.answers[idx].strip().lower()
+                        if user_input.strip().lower() == correct:
+                            st.session_state.score += 1
+                            st.session_state.feedback_text = "✓ CORRECT! ✓"
+                            st.session_state.feedback_color = "#00cc44"
+                            st.session_state.play_sound = "correctsound.mp3"
+                        else:
+                            q = st.session_state.questions[idx]
+                            a = st.session_state.answers[idx]
+                            if not st.session_state.in_retry_round:
+                                st.session_state.wrong_questions.append((q, a))
+                            if st.session_state.repeat_mistakes_active:
+                                st.session_state.retry_queue.append((q, a))
+                            st.session_state.feedback_text = f"✗ INCORRECT — answer was {a.upper()} ✗"
+                            st.session_state.feedback_color = "#cc0000"
+                            st.session_state.play_sound = "incorrectsound.mp3"
+                        st.session_state.input_disabled = True
+                        st.rerun()
 
             if st.session_state.play_sound:
                 play_local_sound(st.session_state.play_sound)
@@ -552,6 +554,7 @@ elif st.session_state.screen == "quiz":
             st.session_state.current_index = 0
             st.session_state.feedback_text = ""
             st.session_state.input_disabled = False
+            st.session_state.last_submitted_text = ""
             st.session_state.in_retry_round = True
             st.rerun()
         else:
