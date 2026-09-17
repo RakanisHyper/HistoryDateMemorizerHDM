@@ -148,6 +148,7 @@ defaults = {
     "timer_mode_active": False,
     "repeat_mistakes_active": False,
     "dark_mode": False,
+    "sound_enabled": True,
     "start_time": None,
     "total_quiz_time": 0,
     "questions": [],
@@ -258,6 +259,29 @@ div.block-container > div[data-testid="stVerticalBlock"] > div.element-container
     background-color: #ff0000 !important;
 }}
 
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(3) {{
+    position: fixed !important;
+    top: 60px !important;
+    left: 20px !important;
+    width: 40px !important;
+    height: 40px !important;
+    z-index: 999999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(3) div.stButton > button {{
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 14pt !important;
+    border-radius: 0px !important;
+}}
+div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:nth-child(3) div.stButton > button:hover {{
+    background-color: #ff0000 !important;
+}}
+
 div.block-container > div[data-testid="stVerticalBlock"] > div.element-container:last-child {{
     position: fixed !important;
     bottom: 20px !important;
@@ -295,6 +319,11 @@ div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child di
 dm_label = "☀️" if st.session_state.dark_mode else "🌙"
 if st.button(dm_label, key="dark_mode_toggle"):
     st.session_state.dark_mode = not st.session_state.dark_mode
+    st.rerun()
+
+sound_label = "🔊" if st.session_state.sound_enabled else "🔇"
+if st.button(sound_label, key="sound_toggle"):
+    st.session_state.sound_enabled = not st.session_state.sound_enabled
     st.rerun()
 
 
@@ -524,7 +553,8 @@ elif st.session_state.screen == "quiz":
                         st.rerun()
 
             if st.session_state.play_sound:
-                play_local_sound(st.session_state.play_sound)
+                if st.session_state.sound_enabled:
+                    play_local_sound(st.session_state.play_sound)
                 st.session_state.play_sound = None
 
             if st.session_state.feedback_text:
