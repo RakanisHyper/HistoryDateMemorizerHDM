@@ -134,6 +134,35 @@ TRIVIA_CATEGORIES = {
     },
 }
 
+# ---- Sub-categories (built FROM the original data above; no dates are edited) ----
+def _split_from(d, keys):
+    picked = {q: d[q] for q in keys}  # KeyError if a question text is mistyped
+    rest = {q: a for q, a in d.items() if q not in picked}
+    return picked, rest
+
+_mao_japan = TRIVIA_CATEGORIES["Mao's China and Japan"]
+_japan_start = list(_mao_japan).index("What is the timeframe for Japan's move to global war?")
+_JAPAN = dict(list(_mao_japan.items())[_japan_start:])
+_MAO = dict(list(_mao_japan.items())[:_japan_start])
+
+_WEIMAR, _HITLER = _split_from(TRIVIA_CATEGORIES["Hitler and the Weimar Republic"], [
+    "When was the Treaty of Versailles signed?",
+    "When did the Spartacist Revolution happen? (Month and Year)",
+    "When did the French occupation of the Ruhr happen?",
+    "When was the Rentemark introduced? (Month and Year)",
+    "When was the Rentemark turned into the Reichsmark?",
+    "When did Germany sign the Locarno Treaties?",
+    "When was Germany admitted into the League of Nations?",
+    "When did the Wall Street Crash happen?",
+    "Was there inflation with the Great Depression in Germany?",
+])
+
+# Categories that open a sub-screen (pick one part, or "Both")
+SPLIT_CATEGORIES = {
+    "Mao's China and Japan": {"Mao's China": _MAO, "Japan": _JAPAN},
+    "Hitler and the Weimar Republic": {"Weimar Republic": _WEIMAR, "Hitler": _HITLER},
+}
+
 HISTORIOGRAPHY_CATEGORIES = {
     "Mao Historiography": {},
     "Hitler Historiography": {},
@@ -163,6 +192,11 @@ defaults = {
     "retry_total": 0,
     "in_retry_round": False,
     "viewing_category": None,
+    "sub_parent": None,
+    "idk_questions": [],       # saved "I don't know" questions (persist while the app session lives)
+    "skipped_questions": [],   # skipped in the current quiz
+    "graded_count": 0,         # questions actually answered (IDK not included)
+    "reviewing_idk": False,
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -335,7 +369,7 @@ if st.button(sound_label, key="sound_toggle"):
     st.rerun()
 
 
-def start_quiz(pool):
+def start_quiz(pool, from_idk=False):
     if st.session_state.shuffle_mode_active:
         random.shuffle(pool)
     st.session_state.questions = [q for q, _ in pool]
@@ -350,6 +384,9 @@ def start_quiz(pool):
     st.session_state.retry_queue = []
     st.session_state.retry_total = 0
     st.session_state.in_retry_round = False
+    st.session_state.skipped_questions = []
+    st.session_state.graded_count = 0
+    st.session_state.reviewing_idk = from_idk
     st.session_state.screen = "quiz"
     st.rerun()
 
@@ -379,7 +416,12 @@ if st.session_state.screen == "menu":
                 btn_col, eye_col = st.columns([6, 1])
                 with btn_col:
                     if st.button(name, key=f"cat_{name}"):
-                        start_quiz(list(questions.items()))
+                        if name in SPLIT_CATEGORIES:
+                            st.session_state.sub_parent = name
+                            st.session_state.screen = "sub_menu"
+                            st.rerun()
+                        else:
+                            start_quiz(list(questions.items()))
                 with eye_col:
                     if st.button("👁", key=f"eye_{name}"):
                         st.session_state.viewing_category = name
@@ -391,6 +433,11 @@ if st.session_state.screen == "menu":
                     st.rerun()
             else:
                 st.button(f"{name} (soon)", key=f"cat_{name}", disabled=True)
+
+        idk_n = len(st.session_state.idk_questions)
+        if st.button(f"❓ Don't Know List ({idk_n})", key="idk_list_btn"):
+            st.session_state.screen = "idk_list"
+            st.rerun()
 
         st.markdown(f"<div class='centered-title' style='margin-top:15px; padding-bottom:10px;'><b style='font-size:14pt;'>Challenges</b></div>", unsafe_allow_html=True)
 
@@ -430,6 +477,58 @@ if st.session_state.screen == "menu":
             if st.button("Activate Timer?", key="timer_off"):
                 st.session_state.timer_mode_active = True
                 st.rerun()
+
+
+elif st.session_state.screen == "sub_menu":
+    parent = st.session_state.sub_parent
+    subs = SPLIT_CATEGORIES.get(parent, {})
+
+    st.markdown(f"<div class='centered-title' style='margin-top:25px;'><b style='font-size:18pt;'>{parent}</b></div>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-title' style='margin-bottom:10px;'><i style='font-size:11pt;'>Choose a section:</i></div>", unsafe_allow_html=True)
+
+    col = st.columns([1, 2, 1])[1]
+    with col:
+        for sub_name, qs in subs.items():
+            if st.button(f"{sub_name} ({len(qs)})", key=f"sub_{sub_name}"):
+                start_quiz(list(qs.items()))
+
+        if st.button(f"Both ({len(TRIVIA_CATEGORIES[parent])})", key="sub_both"):
+            start_quiz(list(TRIVIA_CATEGORIES[parent].items()))
+
+        st.write("")
+        if st.button("← Back to Menu", key="sub_back"):
+            go_to_menu()
+
+
+elif st.session_state.screen == "idk_list":
+    idk_list = st.session_state.idk_questions
+
+    st.markdown("<div class='centered-title' style='margin-top:40px; margin-bottom:5px;'><b style='font-size:18pt;'>❓ Don't Know List</b></div>", unsafe_allow_html=True)
+
+    if not idk_list:
+        st.markdown("<div class='centered-title' style='margin-bottom:20px;'><i style='font-size:11pt;'>Nothing here yet. Press \"I don't know\" during a quiz to save a question.</i></div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div class='centered-title' style='margin-bottom:20px;'><i style='font-size:11pt;'>{len(idk_list)} saved question(s)</i></div>", unsafe_allow_html=True)
+        for q, a in idk_list:
+            st.markdown(
+                f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid {card_border}; padding-left:12px;'>"
+                f"<b style='font-size:11pt;'>{q}</b><br>"
+                f"<span style='font-size:11pt; color:{wrong_color} !important;'>&#8594; {a.upper()}</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+    st.write("")
+    col = st.columns([1, 2, 1])[1]
+    with col:
+        if idk_list:
+            if st.button("Practice these", key="idk_practice"):
+                start_quiz(list(idk_list), from_idk=True)
+            if st.button("Clear list", key="idk_clear"):
+                st.session_state.idk_questions = []
+                st.rerun()
+        if st.button("← Back to Menu", key="idk_back"):
+            go_to_menu()
 
 
 elif st.session_state.screen == "view_answers":
@@ -531,6 +630,9 @@ elif st.session_state.screen == "quiz":
                 # Button changes based on state
                 btn_label = "Next Question" if st.session_state.showing_feedback else "Check Answer"
                 submitted = st.form_submit_button(btn_label)
+                idk = False
+                if not st.session_state.showing_feedback:
+                    idk = st.form_submit_button("I don't know")
 
                 if submitted:
                     if st.session_state.showing_feedback:
@@ -541,9 +643,14 @@ elif st.session_state.screen == "quiz":
                         st.rerun()
                     else:
                         # Check the answer
+                        st.session_state.graded_count += 1
                         correct = st.session_state.answers[idx].strip().lower()
                         if user_input.strip().lower() == correct:
                             st.session_state.score += 1
+                            if st.session_state.reviewing_idk:
+                                pair = (st.session_state.questions[idx], st.session_state.answers[idx])
+                                if pair in st.session_state.idk_questions:
+                                    st.session_state.idk_questions.remove(pair)
                             st.session_state.feedback_text = "✓ CORRECT! ✓"
                             st.session_state.feedback_color = "#00cc44"
                             st.session_state.play_sound = "correctsound.mp3"
@@ -559,6 +666,19 @@ elif st.session_state.screen == "quiz":
                             st.session_state.play_sound = "incorrectsound.mp3"
                         st.session_state.showing_feedback = True
                         st.rerun()
+
+                if idk:
+                    # Not scored, not counted as wrong; saved to the Don't Know list
+                    q = st.session_state.questions[idx]
+                    a = st.session_state.answers[idx]
+                    if (q, a) not in st.session_state.idk_questions:
+                        st.session_state.idk_questions.append((q, a))
+                    if (q, a) not in st.session_state.skipped_questions:
+                        st.session_state.skipped_questions.append((q, a))
+                    st.session_state.feedback_text = f"? SKIPPED — answer was {a.upper()} ?"
+                    st.session_state.feedback_color = "#e6a100"
+                    st.session_state.showing_feedback = True
+                    st.rerun()
 
             if st.session_state.play_sound:
                 if st.session_state.sound_enabled:
@@ -599,13 +719,16 @@ elif st.session_state.screen == "quiz":
 
 
 elif st.session_state.screen == "end":
-    total = len(st.session_state.questions)
-    pct = (st.session_state.score / total) * 100
+    total = st.session_state.graded_count  # "I don't know" questions are excluded
+    skipped_n = len(st.session_state.skipped_questions)
+    pct = (st.session_state.score / total) * 100 if total else 0
+    pct_text = f"({pct:.0f}% correct)" if total else "(no questions answered)"
+    skip_line = f"<br><span style='font-size:11pt; font-weight:normal;'>{skipped_n} skipped (not counted)</span>" if skipped_n else ""
 
     st.markdown("<div class='centered-title' style='margin-top:60px;'><b style='font-size:18pt;'>Clear</b></div>", unsafe_allow_html=True)
     st.markdown(
         f"<div class='centered-title' style='margin-top:20px; margin-bottom:20px;'>"
-        f"<b style='font-size:14pt;'>You scored {st.session_state.score} out of {total}!<br>({pct:.0f}% correct)</b>"
+        f"<b style='font-size:14pt;'>You scored {st.session_state.score} out of {total}!<br>{pct_text}</b>{skip_line}"
         f"</div>",
         unsafe_allow_html=True,
     )
@@ -634,15 +757,28 @@ elif st.session_state.screen == "end":
 
 elif st.session_state.screen == "results":
     wrong = st.session_state.wrong_questions
+    skipped = st.session_state.skipped_questions
 
-    if not wrong:
+    if not wrong and not skipped:
         st.markdown("<div class='centered-title' style='margin-top:60px;'><b style='font-size:22pt;'>🎉 Good job!</b></div>", unsafe_allow_html=True)
         st.markdown("<div class='centered-title' style='margin-top:10px;'><i style='font-size:12pt;'>You got everything right.</i></div>", unsafe_allow_html=True)
-    else:
+    elif wrong:
         st.markdown("<div class='centered-title' style='margin-top:40px; margin-bottom:5px;'><b style='font-size:18pt;'>Questions you missed</b></div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='centered-title' style='margin-bottom:20px;'><i style='font-size:11pt;'>{len(wrong)} wrong out of {len(st.session_state.questions)}</i></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='centered-title' style='margin-bottom:20px;'><i style='font-size:11pt;'>{len(wrong)} wrong out of {st.session_state.graded_count}</i></div>", unsafe_allow_html=True)
 
         for q, a in wrong:
+            st.markdown(
+                f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid {card_border}; padding-left:12px;'>"
+                f"<b style='font-size:11pt;'>{q}</b><br>"
+                f"<span style='font-size:11pt; color:{wrong_color} !important;'>→ {a.upper()}</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+    if skipped:
+        st.markdown("<div class='centered-title' style='margin-top:30px; margin-bottom:5px;'><b style='font-size:18pt;'>Skipped (I don't know)</b></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='centered-title' style='margin-bottom:20px;'><i style='font-size:11pt;'>{len(skipped)} skipped — saved to your Don't Know List</i></div>", unsafe_allow_html=True)
+        for q, a in skipped:
             st.markdown(
                 f"<div style='text-align:left; margin: 8px auto; max-width:480px; border-left: 3px solid {card_border}; padding-left:12px;'>"
                 f"<b style='font-size:11pt;'>{q}</b><br>"
